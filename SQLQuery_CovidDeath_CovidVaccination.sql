@@ -47,13 +47,14 @@ SELECT *
   order by HighestDeathCount desc
 
   --Global numbers
+  --by dates
 select date, sum(new_cases) as TotalCases, sum(cast(new_deaths as int)) as TotalDeaths, 
 sum(cast(new_deaths as int))/sum(new_cases) * 100 as DeathPercentage
   from [PortfolioProject1].[dbo].[CovidDeaths]
   where continent is not null
   group by date
   order by 1,2
-
+ --total numbers
 select sum(new_cases) as TotalCases, sum(cast(new_deaths as int)) as TotalDeaths, 
 sum(cast(new_deaths as int))/sum(new_cases) * 100 as DeathPercentage
   from [PortfolioProject1].[dbo].[CovidDeaths]
@@ -74,7 +75,7 @@ and d.date = v.date
 where d.continent is not null
 order by 1,2,3
 
---rolling sum
+--rolling sum. Calculating new vaccination rolling sum by location and ordering by location and date to get date wise seregated data
 select d.continent, d.location, d.date, d.population, v.new_vaccinations,
 SUM(cast(v.new_vaccinations as int)) over (PARTITION by d.location order by d.location, d.date) as RollingPeopleVaccinated
 from PortfolioProject1..CovidDeaths d
@@ -84,7 +85,8 @@ and d.date = v.date
 where d.continent is not null
 order by 2,3
 
---Use CTE
+--Use CTE (common table expression)
+--CTEs act as virtual tables (with records and columns) that are created during query execution, used by the query, and deleted after the query executes.
 with popvsvac (Continent, Location, Date, Population, New_Vaccinations, RollingPeopleVaccinated)
 as
 (
@@ -134,7 +136,3 @@ join PortfolioProject1..CovidVaccinations v
 where d.continent is not null
 
 select * from PercentPopulationVaccinated
-
-
- 
-
